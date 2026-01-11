@@ -1,4 +1,10 @@
+<<<<<<< HEAD
 rule_id, room_type, parameter, operator, value, severity, regulation
 AERB-01, MRI, min_area_sqm, >=, 25, Critical, AERB
 NBC-02, Corridor, width_m, >=, 2.4, Critical, NBC
 NABH-05, Waiting, min_area_sqm, >=, 15, Warning, NABH
+=======
+"rule_id,room_type,required_zone,severity,source"
+"NABH_Z_01,MRI,CLEAN,CRITICAL,NABH"
+"NABH_Z_02,CT,CLEAN,WARNING,NABH"
+>>>>>>> main

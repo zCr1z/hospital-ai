@@ -1,5 +1,11 @@
+<<<<<<< HEAD
 room_a, room_b, allowed, reason, regulation
 MRI, Lift, false, Vibration risk, AERB
 Dirty Utility, Sterile Corridor, false, Infection risk, NABH
 CT, Control, true, Operational requirement, Best Practice
 Waiting, MRI, false, Privacy & radiation safety, NABH
+=======
+"rule_id,room_type,forbidden_near,severity,source"
+"AERB_AD_01,MRI,Lift,CRITICAL,AERB"
+"AERB_AD_02,MRI,Generator,CRITICAL,AERB"
+>>>>>>> main
