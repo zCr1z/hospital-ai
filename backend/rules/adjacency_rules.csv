@@ -1,0 +1,3 @@
+"rule_id,room_type,forbidden_near,severity,source"
+"AERB_02,MRI,Lift,CRITICAL,AERB"
+"AERB_03,MRI,Generator,CRITICAL,AERB"

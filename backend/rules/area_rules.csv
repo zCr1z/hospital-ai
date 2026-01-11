@@ -1,0 +1,3 @@
+"rule_id,room_type,min_area,severity,source"
+"AERB_01,MRI,25,CRITICAL,AERB"
+"NBC_01,CT,20,WARNING,NBC"
