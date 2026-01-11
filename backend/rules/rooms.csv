@@ -1,0 +1,7 @@
+room_type, min_area_sqm, zone, vibration_sensitive, radiation_emitting, shielding_required
+MRI, 25, Restricted, true, true, true
+CT, 20, Restricted, false, true, true
+Waiting, 15, Public, false, false, false
+Control, 10, Restricted, false, false, false
+Lift, 0, Service, false, true, false
+clea
