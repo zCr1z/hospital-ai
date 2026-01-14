@@ -1,21 +1,21 @@
-"Rule_ID,Source,Rule_Type,Primary_Room_Attribute,Adjacent_Room_Attribute,Adjacency_Allowed,Severity,Reason,Action_On_Violation"
-"RAD_ADJ_001,AERB,Radiation_Safety,Has_Radiation,Public_Accessible,No,Hard_Fail,Radiation rooms cannot open into public areas due to exposure risk,Reject_Layout"
-"RAD_ADJ_002,AERB,Radiation_Safety,Has_Radiation,Waiting_Area,No,Hard_Fail,High occupancy waiting areas cannot be adjacent to radiation sources,Reject_Layout"
-"RAD_ADJ_003,AERB,Radiation_Safety,Has_Radiation,Shielding_Provided,Yes,Hard_Fail,Radiation rooms must be bounded by compliant shielding,Reject_Layout"
-"RAD_ADJ_004,AERB,Operational_Safety,Has_Radiation,Control_Room,Yes,Hard_Fail,Control room must be directly adjacent for safe operation,Reject_Layout"
-"RAD_ADJ_005,AERB,Visibility,Control_Room,Has_Radiation,Yes,Hard_Fail,Direct visual control of patient is mandatory,Reject_Layout"
-"RAD_ADJ_006,AERB,MRI_Safety,Is_MRI,Vibration_Source,No,Hard_Fail,MRI performance is compromised by vibration sources,Reject_Layout"
-"RAD_ADJ_007,AERB,MRI_Safety,Is_MRI,Public_Accessible,No,Hard_Fail,5-gauss magnetic field must not extend into public areas,Reject_Layout"
-"RAD_ADJ_008,AERB,MRI_Safety,Is_MRI,Lift_Core,No,Hard_Fail,Lift motors cause vibration and magnetic interference,Reject_Layout"
-"RAD_ADJ_009,AERB,MRI_Safety,Is_MRI,Plant_Room,No,Hard_Fail,Mechanical equipment interferes with MRI magnetic stability,Reject_Layout"
-"RAD_ADJ_010,AERB,MRI_Safety,Is_MRI,Equipment_Room,Yes,Hard_Fail,MRI requires adjacent RF and equipment rooms,Reject_Layout"
-"RAD_ADJ_011,NBC,Fire_Life_Safety,Fire_Exit,Has_Radiation,No,Hard_Fail,Fire exits cannot pass through radiation-controlled spaces,Reject_Layout"
-"RAD_ADJ_012,NBC,Fire_Life_Safety,Fire_Exit,Clean_Zone,Yes,Hard_Fail,Fire exits must remain accessible and unobstructed,Reject_Layout"
-"RAD_ADJ_013,NBC,Fire_Life_Safety,High_Risk_Equipment,Public_Corridor,No,Hard_Fail,High-risk rooms must not open directly into escape routes,Reject_Layout"
-"RAD_ADJ_014,NBC,Fire_Life_Safety,Imaging_Room,Fire_Stair,Indirect_Only,Hard_Fail,Imaging rooms require fire-rated buffer before stair access,Reject_Layout"
-"RAD_ADJ_015,NABH,Patient_Safety,Clean_Zone,Dirty_Utility,No,Hard_Fail,Clean and dirty workflows must be strictly separated,Reject_Layout"
-"RAD_ADJ_016,NABH,Patient_Flow,Patient_Area,Staff_Only_Zone,Indirect_Only,Warning,Patient movement through staff zones should be minimized,Flag_Warning"
-"RAD_ADJ_017,NABH,Patient_Privacy,Imaging_Room,Changing_Room,Yes,Hard_Fail,Patients must access imaging rooms via change areas,Reject_Layout"
-"RAD_ADJ_018,NABH,Operational_Flow,Waiting_Area,Imaging_Room,Indirect_Only,Hard_Fail,Waiting areas must be buffered for privacy and radiation safety,Reject_Layout"
-"RAD_ADJ_019,Functional,Operational_Efficiency,Imaging_Room,Reporting_Room,Preferred,Warning,Closer proximity improves reporting efficiency,Suggest_Optimization"
-"RAD_ADJ_020,Functional,Operational_Efficiency,Imaging_Room,Equipment_Storage,Yes,Warning,Nearby storage improves uptime and maintenance,Suggest_Optimization"
+Rule_ID,Source,Rule_Type,Primary_Room_Attribute,Adjacent_Room_Attribute,Adjacency_Allowed,Severity,Reason,Action_On_Violation
+RAD_ADJ_001,AERB,Radiation_Safety,Has_Radiation,Public_Accessible,No,Hard_Fail,Radiation rooms cannot open into public areas due to exposure risk,Reject_Layout
+RAD_ADJ_002,AERB,Radiation_Safety,Has_Radiation,Waiting_Area,No,Hard_Fail,High occupancy waiting areas cannot be adjacent to radiation sources,Reject_Layout
+RAD_ADJ_003,AERB,Radiation_Safety,Has_Radiation,Shielding_Provided,Yes,Hard_Fail,Radiation rooms must be bounded by compliant shielding,Reject_Layout
+RAD_ADJ_004,AERB,Operational_Safety,Has_Radiation,Control_Room,Yes,Hard_Fail,Control room must be directly adjacent for safe operation,Reject_Layout
+RAD_ADJ_005,AERB,Visibility,Control_Room,Has_Radiation,Yes,Hard_Fail,Direct visual control of patient is mandatory,Reject_Layout
+RAD_ADJ_006,AERB,MRI_Safety,Is_MRI,Vibration_Source,No,Hard_Fail,MRI performance is compromised by vibration sources,Reject_Layout
+RAD_ADJ_007,AERB,MRI_Safety,Is_MRI,Public_Accessible,No,Hard_Fail,5-gauss magnetic field must not extend into public areas,Reject_Layout
+RAD_ADJ_008,AERB,MRI_Safety,Is_MRI,Lift_Core,No,Hard_Fail,Lift motors cause vibration and magnetic interference,Reject_Layout
+RAD_ADJ_009,AERB,MRI_Safety,Is_MRI,Plant_Room,No,Hard_Fail,Mechanical equipment interferes with MRI magnetic stability,Reject_Layout
+RAD_ADJ_010,AERB,MRI_Safety,Is_MRI,Equipment_Room,Yes,Hard_Fail,MRI requires adjacent RF and equipment rooms,Reject_Layout
+RAD_ADJ_011,NBC,Fire_Life_Safety,Fire_Exit,Has_Radiation,No,Hard_Fail,Fire exits cannot pass through radiation-controlled spaces,Reject_Layout
+RAD_ADJ_012,NBC,Fire_Life_Safety,Fire_Exit,Clean_Zone,Yes,Hard_Fail,Fire exits must remain accessible and unobstructed,Reject_Layout
+RAD_ADJ_013,NBC,Fire_Life_Safety,High_Risk_Equipment,Public_Corridor,No,Hard_Fail,High-risk rooms must not open directly into escape routes,Reject_Layout
+RAD_ADJ_014,NBC,Fire_Life_Safety,Imaging_Room,Fire_Stair,Indirect_Only,Hard_Fail,Imaging rooms require fire-rated buffer before stair access,Reject_Layout
+RAD_ADJ_015,NABH,Patient_Safety,Clean_Zone,Dirty_Utility,No,Hard_Fail,Clean and dirty workflows must be strictly separated,Reject_Layout
+RAD_ADJ_016,NABH,Patient_Flow,Patient_Area,Staff_Only_Zone,Indirect_Only,Warning,Patient movement through staff zones should be minimized,Flag_Warning
+RAD_ADJ_017,NABH,Patient_Privacy,Imaging_Room,Changing_Room,Yes,Hard_Fail,Patients must access imaging rooms via change areas,Reject_Layout
+RAD_ADJ_018,NABH,Operational_Flow,Waiting_Area,Imaging_Room,Indirect_Only,Hard_Fail,Waiting areas must be buffered for privacy and radiation safety,Reject_Layout
+RAD_ADJ_019,Functional,Operational_Efficiency,Imaging_Room,Reporting_Room,Preferred,Warning,Closer proximity improves reporting efficiency,Suggest_Optimization
+RAD_ADJ_020,Functional,Operational_Efficiency,Imaging_Room,Equipment_Storage,Yes,Warning,Nearby storage improves uptime and maintenance,Suggest_Optimization

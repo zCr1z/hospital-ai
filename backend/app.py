@@ -1,54 +1,75 @@
-# backend/app.py
+from rule_engine import run_engine
 
-from models import Room
-from rule_engine import (
-    load_csv,
-    evaluate_area_rules,
-    evaluate_zone_rules,
-    evaluate_adjacency_rules,
-    detect_conflicts
-)
+def get_user_layout():
+    rooms = []
+allowed_attrs, allowed_zones = load_allowed_values("./rules")
 
-# ---------------- SAMPLE INPUT ----------------
-rooms = [
-    Room("MRI", 22, "CLEAN"),
-    Room("CT", 24, "DIRTY"),
-    Room("Waiting", 18, "SEMI")
-]
+print("\n--- ALLOWED ATTRIBUTES ---")
+print(", ".join(allowed_attrs))
 
-# Which rooms are near which
-adjacency_map = {
-    "MRI": ["Lift"],       # Violation (MRI near Lift)
-    "CT": ["Waiting"]      # Usually allowed
-}
+print("\n--- ALLOWED ZONES ---")
+print(", ".join(allowed_zones))
 
-# Simulated conflicting constraints (NBC vs NABH)
-active_constraints = {
-    "corridor_access": ["PUBLIC", "RESTRICTED"]
-}
+    n = int(input("Enter number of rooms: "))
 
-# ---------------- LOAD RULES ----------------
-area_rules = load_csv("area_rules.csv")
-adjacency_rules = load_csv("adjacency_rules.csv")
-zone_rules = load_csv("zone_rules.csv")
+    for i in range(n):
+        print(f"\nRoom {i+1}")
+        room_id = input("Room ID: ")
+        area = float(input("Area (sqm): "))
+        zone = input("Zone: ")
+        attributes = input("Attributes (comma separated): ").split(",")
+        adjacent = input("Adjacent rooms (comma separated): ").split(",")
 
-# Conflict rules are OPTIONAL for now
-# We simulate conflicts directly from active_constraints
-conflict_rules = []  
+        rooms.append({
+            "id": room_id.strip(),
+            "area": area,
+            "zone": zone.strip(),
+            "attributes": [a.strip() for a in attributes],
+            "adjacent_to": [a.strip() for a in adjacent if a.strip()]
+        })
 
-# ---------------- RUN ENGINE ----------------
-results = []
+    flows = []
+    add_flow = input("\nAdd patient flow? (y/n): ").lower()
+    if add_flow == "y":
+        path = input("Flow path (comma separated room IDs): ").split(",")
+        flows.append({
+            "entity": "Patient",
+            "path": [p.strip() for p in path]
+        })
 
-results.extend(evaluate_area_rules(rooms, area_rules))
-results.extend(evaluate_zone_rules(rooms, zone_rules))
-results.extend(evaluate_adjacency_rules(adjacency_map, adjacency_rules))
-results.extend(detect_conflicts(active_constraints, conflict_rules))
+    return {
+        "rooms": rooms,
+        "flows": flows
+    }
 
-# ---------------- OUTPUT ----------------
-print("\n=== COMPLIANCE REPORT ===\n")
 
-if not results:
-    print("✅ No compliance issues detected.")
-else:
+if __name__ == "__main__":
+    layout = get_user_layout()
+    results = run_engine(layout, "./rules")
+
+    print("\n--- RULE ENGINE OUTPUT ---")
     for r in results:
-        print(f"[{r.severity}] {r.message} ({r.source})")
+        print(r)
+
+def load_allowed_values(rules_path):
+    attrs = set()
+    zones = set()
+
+    import csv
+    from pathlib import Path
+
+    for file in ["adjacency_rules.csv", "area_rules.csv", "conflict_rules.csv"]:
+        with open(Path(rules_path) / file, encoding="utf-8") as f:
+            reader = csv.DictReader(f)
+            for row in reader:
+                for k, v in row.items():
+                    if "Attribute" in k and v:
+                        attrs.add(v)
+
+    with open(Path(rules_path) / "zone_rules.csv", encoding="utf-8") as f:
+        reader = csv.DictReader(f)
+        for r in reader:
+            zones.add(r["Primary_Zone"])
+            zones.add(r["Secondary_Zone"])
+
+    return sorted(attrs), sorted(zones)

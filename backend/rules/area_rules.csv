@@ -1,16 +1,16 @@
-"Rule_ID,Source,Rule_Type,Room_Attribute,Min_Area_sqm,Max_Area_sqm,Applies_To,Severity,Reason,Action_On_Violation,Explainability_Template"
-"AREA_001,AERB,Radiation_Safety,CT_Scan_Room,25,,Per_Room,Hard_Fail,Minimum area required for radiation safety and equipment clearance,Reject_Layout,CT Scan room area {Actual} sqm is less than AERB minimum {Min} sqm."
-"AREA_002,AERB,Radiation_Safety,XRay_Room,18,,Per_Room,Hard_Fail,Insufficient room size increases radiation exposure risk,Reject_Layout,X-Ray room area {Actual} sqm is below required {Min} sqm."
-"AREA_003,AERB,Radiation_Safety,Fluoroscopy_Room,30,,Per_Room,Hard_Fail,Fluoroscopy requires larger clearance for continuous imaging,Reject_Layout,Fluoroscopy room area {Actual} sqm violates AERB minimum {Min} sqm."
-"AREA_004,AERB,MRI_Safety,MRI_Magnet_Room,35,,Per_Room,Hard_Fail,MRI magnet and safety zones require strict minimum area,Reject_Layout,MRI room area {Actual} sqm is below required {Min} sqm."
-"AREA_005,AERB,MRI_Safety,MRI_Equipment_Room,15,,Per_Room,Hard_Fail,RF and gradient equipment need dedicated space,Reject_Layout,MRI equipment room area insufficient ({Actual} sqm)."
-"AREA_006,NABH,Patient_Safety,Control_Room,10,,Per_Room,Hard_Fail,Operator safety and visibility requirements,Reject_Layout,Control room area {Actual} sqm is below NABH minimum {Min} sqm."
-"AREA_007,NABH,Patient_Privacy,Changing_Room,6,,Per_Room,Hard_Fail,Patient dignity and privacy standards,Reject_Layout,Changing room area {Actual} sqm violates NABH minimum {Min} sqm."
-"AREA_008,NABH,Patient_Flow,Waiting_Area,1.2,,Per_Patient,Hard_Fail,Minimum waiting space per patient required,Reject_Layout,Waiting area provides {Actual} sqm/patient (< {Min} sqm required)."
-"AREA_009,NABH,Operational_Flow,Reporting_Room,8,,Per_Room,Warning,Small reporting rooms reduce staff efficiency,Flag_Warning,Reporting room area {Actual} sqm is below recommended {Min} sqm."
-"AREA_010,NBC,Life_Safety,Corridor_Radiology,2.4,,Per_Corridor,Hard_Fail,Minimum width required for stretcher and fire evacuation,Reject_Layout,Radiology corridor width {Actual} m is less than NBC minimum {Min} m."
-"AREA_011,NBC,Life_Safety,Sub_Waiting_Alcove,6,,Per_Alcove,Warning,Small alcoves may obstruct evacuation,Suggest_Optimization,Sub-waiting alcove area {Actual} sqm may obstruct circulation."
-"AREA_012,Functional,Operational_Efficiency,Equipment_Storage,6,,Per_Room,Warning,Insufficient storage increases downtime,Suggest_Optimization,Equipment storage area {Actual} sqm is below recommended {Min} sqm."
-"AREA_013,Functional,Operational_Efficiency,Film_Processing_Room,8,,Per_Room,Warning,Compact processing rooms reduce workflow efficiency,Suggest_Optimization,Film processing room area {Actual} sqm is below optimal {Min} sqm."
-"AREA_014,Functional,Space_Optimization,Total_Radiology_Department,,User_Site_Area,Per_Department,Hard_Fail,Department exceeds available site area,Reject_Layout,Radiology department total area {Actual} sqm exceeds available {Max} sqm."
-"AREA_015,Functional,Capacity_Planning,Imaging_Room,1,,Per_Equipment,Hard_Fail,One imaging room required per installed modality,Reject_Layout,Installed equipment count exceeds number of imaging rooms."
+Rule_ID,Source,Rule_Type,Room_Attribute,Min_Area_sqm,Max_Area_sqm,Applies_To,Severity,Reason,Action_On_Violation,Explainability_Template
+AREA_001,AERB,Radiation_Safety,CT_Scan_Room,25,,Per_Room,Hard_Fail,Minimum area required for radiation safety and equipment clearance,Reject_Layout,CT Scan room area {Actual} sqm is less than AERB minimum {Min} sqm.
+AREA_002,AERB,Radiation_Safety,XRay_Room,18,,Per_Room,Hard_Fail,Insufficient room size increases radiation exposure risk,Reject_Layout,X-Ray room area {Actual} sqm is below required {Min} sqm.
+AREA_003,AERB,Radiation_Safety,Fluoroscopy_Room,30,,Per_Room,Hard_Fail,Fluoroscopy requires larger clearance for continuous imaging,Reject_Layout,Fluoroscopy room area {Actual} sqm violates AERB minimum {Min} sqm.
+AREA_004,AERB,MRI_Safety,MRI_Magnet_Room,35,,Per_Room,Hard_Fail,MRI magnet and safety zones require strict minimum area,Reject_Layout,MRI room area {Actual} sqm is below required {Min} sqm.
+AREA_005,AERB,MRI_Safety,MRI_Equipment_Room,15,,Per_Room,Hard_Fail,RF and gradient equipment need dedicated space,Reject_Layout,MRI equipment room area insufficient ({Actual} sqm).
+AREA_006,NABH,Patient_Safety,Control_Room,10,,Per_Room,Hard_Fail,Operator safety and visibility requirements,Reject_Layout,Control room area {Actual} sqm is below NABH minimum {Min} sqm.
+AREA_007,NABH,Patient_Privacy,Changing_Room,6,,Per_Room,Hard_Fail,Patient dignity and privacy standards,Reject_Layout,Changing room area {Actual} sqm violates NABH minimum {Min} sqm.
+AREA_008,NABH,Patient_Flow,Waiting_Area,1.2,,Per_Patient,Hard_Fail,Minimum waiting space per patient required,Reject_Layout,Waiting area provides {Actual} sqm/patient (< {Min} sqm required).
+AREA_009,NABH,Operational_Flow,Reporting_Room,8,,Per_Room,Warning,Small reporting rooms reduce staff efficiency,Flag_Warning,Reporting room area {Actual} sqm is below recommended {Min} sqm.
+AREA_010,NBC,Life_Safety,Corridor_Radiology,2.4,,Per_Corridor,Hard_Fail,Minimum width required for stretcher and fire evacuation,Reject_Layout,Radiology corridor width {Actual} m is less than NBC minimum {Min} m.
+AREA_011,NBC,Life_Safety,Sub_Waiting_Alcove,6,,Per_Alcove,Warning,Small alcoves may obstruct evacuation,Suggest_Optimization,Sub-waiting alcove area {Actual} sqm may obstruct circulation.
+AREA_012,Functional,Operational_Efficiency,Equipment_Storage,6,,Per_Room,Warning,Insufficient storage increases downtime,Suggest_Optimization,Equipment storage area {Actual} sqm is below recommended {Min} sqm.
+AREA_013,Functional,Operational_Efficiency,Film_Processing_Room,8,,Per_Room,Warning,Compact processing rooms reduce workflow efficiency,Suggest_Optimization,Film processing room area {Actual} sqm is below optimal {Min} sqm.
+AREA_014,Functional,Space_Optimization,Total_Radiology_Department,,User_Site_Area,Per_Department,Hard_Fail,Department exceeds available site area,Reject_Layout,Radiology department total area {Actual} sqm exceeds available {Max} sqm.
+AREA_015,Functional,Capacity_Planning,Imaging_Room,1,,Per_Equipment,Hard_Fail,One imaging room required per installed modality,Reject_Layout,Installed equipment count exceeds number of imaging rooms.
