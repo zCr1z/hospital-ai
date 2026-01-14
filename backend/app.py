@@ -1,30 +1,32 @@
-from rule_engine import run_engine
+# backend/app.py
+
+from engine import run_engine
+
 
 def get_user_layout():
+    """
+    CLI-based input for Phase-1 testing.
+    Frontend will later send the same structure as JSON.
+    """
+
     rooms = []
-allowed_attrs, allowed_zones = load_allowed_values("./rules")
 
-print("\n--- ALLOWED ATTRIBUTES ---")
-print(", ".join(allowed_attrs))
-
-print("\n--- ALLOWED ZONES ---")
-print(", ".join(allowed_zones))
-
+    print("\n--- HOSPITAL LAYOUT INPUT ---")
     n = int(input("Enter number of rooms: "))
 
     for i in range(n):
         print(f"\nRoom {i+1}")
-        room_id = input("Room ID: ")
+        room_id = input("Room ID: ").strip()
         area = float(input("Area (sqm): "))
-        zone = input("Zone: ")
+        zone = input("Zone: ").strip()
         attributes = input("Attributes (comma separated): ").split(",")
-        adjacent = input("Adjacent rooms (comma separated): ").split(",")
+        adjacent = input("Adjacent rooms (comma separated room IDs): ").split(",")
 
         rooms.append({
-            "id": room_id.strip(),
+            "id": room_id,
             "area": area,
-            "zone": zone.strip(),
-            "attributes": [a.strip() for a in attributes],
+            "zone": zone,
+            "attributes": [a.strip() for a in attributes if a.strip()],
             "adjacent_to": [a.strip() for a in adjacent if a.strip()]
         })
 
@@ -34,7 +36,7 @@ print(", ".join(allowed_zones))
         path = input("Flow path (comma separated room IDs): ").split(",")
         flows.append({
             "entity": "Patient",
-            "path": [p.strip() for p in path]
+            "path": [p.strip() for p in path if p.strip()]
         })
 
     return {
@@ -45,31 +47,21 @@ print(", ".join(allowed_zones))
 
 if __name__ == "__main__":
     layout = get_user_layout()
-    results = run_engine(layout, "./rules")
 
-    print("\n--- RULE ENGINE OUTPUT ---")
-    for r in results:
-        print(r)
+    # Run compliance engine
+    output = run_engine(layout)
 
-def load_allowed_values(rules_path):
-    attrs = set()
-    zones = set()
+    print("\n==============================")
+    print("   COMPLIANCE ENGINE OUTPUT")
+    print("==============================\n")
 
-    import csv
-    from pathlib import Path
+    print("---- PROCESSING LOG ----")
+    for log in output["logs"]:
+        print(f"[{log['step']}] {log['status']} - {log['message']}")
 
-    for file in ["adjacency_rules.csv", "area_rules.csv", "conflict_rules.csv"]:
-        with open(Path(rules_path) / file, encoding="utf-8") as f:
-            reader = csv.DictReader(f)
-            for row in reader:
-                for k, v in row.items():
-                    if "Attribute" in k and v:
-                        attrs.add(v)
-
-    with open(Path(rules_path) / "zone_rules.csv", encoding="utf-8") as f:
-        reader = csv.DictReader(f)
-        for r in reader:
-            zones.add(r["Primary_Zone"])
-            zones.add(r["Secondary_Zone"])
-
-    return sorted(attrs), sorted(zones)
+    print("\n---- COMPLIANCE REPORT ----")
+    for r in output["compliance_report"]:
+        print(
+            f"[{r['severity']}] "
+            f"{r['category']} | {r['rule_id']} | {r['message']} ({r['source']})"
+        )
