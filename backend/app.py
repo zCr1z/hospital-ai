@@ -7,19 +7,24 @@ def load_allowed_values(rules_path):
     attrs = set()
     zones = set()
 
+    import csv
+    from pathlib import Path
+
     for file in ["adjacency_rules.csv", "area_rules.csv", "conflict_rules.csv"]:
         with open(Path(rules_path) / file, encoding="utf-8") as f:
             reader = csv.DictReader(f)
             for row in reader:
                 for k, v in row.items():
-                    if "Attribute" in k and v:
+                    if k and "Attribute" in k and v:
                         attrs.add(v)
 
     with open(Path(rules_path) / "zone_rules.csv", encoding="utf-8") as f:
         reader = csv.DictReader(f)
         for r in reader:
-            zones.add(r["Primary_Zone"])
-            zones.add(r["Secondary_Zone"])
+            if r.get("Primary_Zone"):
+                zones.add(r["Primary_Zone"])
+            if r.get("Secondary_Zone"):
+                zones.add(r["Secondary_Zone"])
 
     return sorted(attrs), sorted(zones)
 
@@ -77,4 +82,4 @@ if __name__ == "__main__":
         for r in results:
             print(r)
     else:
-        print("✅ No violations detected")
+        print("No violations detected")
