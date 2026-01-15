@@ -1,0 +1,7 @@
+Room_Type,Base_Count,Unit_Area_sqm,Adjacency_Notes
+MRI,1,30,Must be near Control Room
+CT,1,25,Must be near Control Room
+XRay,1,20,Near Waiting Area
+Control_Room,2,12,Adjacent to Imaging Rooms
+Waiting_Area,1,40,Near Public Entry
+Dirty_Utility,1,10,Away from Clean Zone
