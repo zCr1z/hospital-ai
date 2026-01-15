@@ -1,54 +1,93 @@
 # backend/app.py
 
-from models import Room
-from rule_engine import (
-    load_csv,
-    evaluate_area_rules,
-    evaluate_zone_rules,
-    evaluate_adjacency_rules,
-    detect_conflicts
-)
+from engine import run_engine
 
-# ---------------- SAMPLE INPUT ----------------
-rooms = [
-    Room("MRI", 22, "CLEAN"),
-    Room("CT", 24, "DIRTY"),
-    Room("Waiting", 18, "SEMI")
-]
+def get_user_layout():
+    """
+    CLI-based input for Phase-1 testing.
+    Frontend will later send the same structure as JSON.
+    """
 
-# Which rooms are near which
-adjacency_map = {
-    "MRI": ["Lift"],       # Violation (MRI near Lift)
-    "CT": ["Waiting"]      # Usually allowed
-}
+    rooms = []
 
-# Simulated conflicting constraints (NBC vs NABH)
-active_constraints = {
-    "corridor_access": ["PUBLIC", "RESTRICTED"]
-}
+    print("\n--- HOSPITAL LAYOUT INPUT ---")
+    n = int(input("Enter number of rooms: "))
 
-# ---------------- LOAD RULES ----------------
-area_rules = load_csv("area_rules.csv")
-adjacency_rules = load_csv("adjacency_rules.csv")
-zone_rules = load_csv("zone_rules.csv")
+    for i in range(n):
+        print(f"\nRoom {i+1}")
+        room_id = input("Room ID: ").strip()
+        area = float(input("Area (sqm): "))
+        zone = input("Zone: ").strip()
 
-# Conflict rules are OPTIONAL for now
-# We simulate conflicts directly from active_constraints
-conflict_rules = []  
+        attributes = input(
+            "Attributes (comma separated): "
+        ).split(",")
 
-# ---------------- RUN ENGINE ----------------
-results = []
+        adjacent = input(
+            "Adjacent rooms (comma separated room IDs): "
+        ).split(",")
 
-results.extend(evaluate_area_rules(rooms, area_rules))
-results.extend(evaluate_zone_rules(rooms, zone_rules))
-results.extend(evaluate_adjacency_rules(adjacency_map, adjacency_rules))
-results.extend(detect_conflicts(active_constraints, conflict_rules))
+        rooms.append({
+            "id": room_id,
+            "area": area,
+            "zone": zone,
+            "attributes": [a.strip() for a in attributes if a.strip()],
+            "adjacent_to": [a.strip() for a in adjacent if a.strip()]
+        })
 
-# ---------------- OUTPUT ----------------
-print("\n=== COMPLIANCE REPORT ===\n")
+        # UX SAFETY
+        if not rooms[-1]["attributes"]:
+            print("⚠️  Warning: No attributes provided. Some rules may not apply.")
 
-if not results:
-    print("✅ No compliance issues detected.")
-else:
-    for r in results:
-        print(f"[{r.severity}] {r.message} ({r.source})")
+    flows = []
+    add_flow = input("\nAdd patient flow? (y/n): ").lower()
+
+    if add_flow == "y":
+        path = input(
+            "Flow path (comma separated room IDs): "
+        ).split(",")
+
+        flows.append({
+            "entity": "Patient",
+            "path": [p.strip() for p in path if p.strip()]
+        })
+
+    return {
+        "rooms": rooms,
+        "flows": flows
+    }
+
+
+# -------------------------------------------------
+# MAIN
+# -------------------------------------------------
+if __name__ == "__main__":
+    layout = get_user_layout()
+
+    # Run compliance engine
+    output = run_engine(layout)
+
+    print("\n==============================")
+    print("   COMPLIANCE ENGINE OUTPUT")
+    print("==============================\n")
+
+    # ---------------- PROCESSING LOG ----------------
+    print("---- PROCESSING LOG ----")
+    for log in output["logs"]:
+        print(
+            f"[{log['step']}] {log['status']} - {log['message']}"
+        )
+
+    # ---------------- COMPLIANCE REPORT ----------------
+    print("\n---- COMPLIANCE REPORT ----")
+
+    if not output["compliance_report"]:
+        print("[INFO] SYSTEM | No applicable compliance rules triggered.")
+        print("Reason: Rooms lack regulatory attributes or conflicts.")
+    else:
+        for r in output["compliance_report"]:
+            print(
+                f"[{r['severity']}] "
+                f"{r['category']} | {r['rule_id']} | "
+                f"{r['message']} ({r['source']})"
+            )

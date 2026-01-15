@@ -1,2 +1,11 @@
-"rule_id,constraint_key,source"
-"CONF_01,corridor_access,NBC_vs_NABH"
+Conflict_ID,Source,Constraint_A,Constraint_B,Severity,Conflict_Description
+CONF_001,NBC+NABH,Fire_Exit,Clean_Zone,Critical,Conflict Detected: NBC mandates unrestricted fire egress, but NABH restricts access to maintain clean zoning.
+CONF_002,AERB+NBC,Has_Radiation,Fire_Exit,Critical,Conflict Detected: Fire exit routed through radiation-controlled space violates AERB safety norms.
+CONF_003,AERB+NABH,Has_Radiation,Public_Accessible,Critical,Conflict Detected: NABH patient flow conflicts with AERB access control for radiation safety.
+CONF_004,AERB+NBC,Is_MRI,Lift_Core,Critical,Conflict Detected: MRI vibration sensitivity conflicts with NBC core adjacency norms.
+CONF_005,NBC+NABH,Fire_Exit,Patient_Privacy,Major,Conflict Detected: Fire exit visibility conflicts with NABH patient privacy requirements.
+CONF_006,NABH+NBC,Dirty_Utility,Fire_Exit,Major,Conflict Detected: Dirty utility routing conflicts with fire egress permissibility.
+CONF_007,AERB+NABH,Is_MRI,Staff_Only_Zone,Major,Conflict Detected: MRI zone control conflicts with NABH staff flow optimization.
+CONF_008,NBC+AERB,Fire_Rated_Wall,Shielding_Provided,Critical,Conflict Detected: Required fire wall construction conflicts with radiation shielding specifications.
+CONF_009,NABH+AERB,Waiting_Area,Is_MRI,Critical,Conflict Detected: Patient waiting adjacency violates MRI magnetic field safety.
+CONF_010,NBC+NABH,Minimum_Corridor_Width,Access_Control,Major,Conflict Detected: Corridor width compliance conflicts with NABH access control zoning.

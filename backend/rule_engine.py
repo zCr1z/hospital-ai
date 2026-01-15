@@ -1,114 +1,315 @@
 # backend/rule_engine.py
 
 import csv
-import os
-from models import ComplianceResult
+from pathlib import Path
+from models import ComplianceResult, LogEvent
 
-# ---------------- PATH SETUP ----------------
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-RULES_DIR = os.path.join(BASE_DIR, "rules")
 
-# ---------------- CSV LOADER ----------------
-def load_csv(filename):
-    path = os.path.join(RULES_DIR, filename)
-    rules = []
-
+# -------------------------------------------------
+# CSV LOADER
+# -------------------------------------------------
+def load_csv(path: Path):
     with open(path, newline="", encoding="utf-8") as f:
-        reader = csv.DictReader(f)
-        for row in reader:
-            rules.append(row)
+        return list(csv.DictReader(f))
 
-    return rules
 
-# ---------------- AREA RULES ----------------
-def evaluate_area_rules(rooms, rules):
+# -------------------------------------------------
+# AREA RULES
+# -------------------------------------------------
+def evaluate_area(rooms, rules, logs):
     results = []
+    applied = False
 
-    for room in rooms:
-        for rule in rules:
-            if "room_type" not in rule or "min_area" not in rule:
-                continue
-
-            if room.name == rule["room_type"]:
-                min_area = float(rule["min_area"])
-
-                if room.area < min_area:
-                    results.append(
-                        ComplianceResult(
-                            rule_id=rule.get("rule_id", "AREA_UNKNOWN"),
-                            status="FAIL",
-                            severity=rule.get("severity", "WARNING"),
-                            message=f"{room.name} area too small ({room.area} < {min_area})",
-                            source=rule.get("source", "UNKNOWN")
-                        )
-                    )
-
-    return results
-
-# ---------------- ZONE RULES ----------------
-def evaluate_zone_rules(rooms, rules):
-    results = []
-
-    for room in rooms:
-        for rule in rules:
-            if "room_type" not in rule or "required_zone" not in rule:
-                continue
-
-            if room.name == rule["room_type"]:
-                if room.zone != rule["required_zone"]:
-                    results.append(
-                        ComplianceResult(
-                            rule_id=rule.get("rule_id", "ZONE_UNKNOWN"),
-                            status="FAIL",
-                            severity=rule.get("severity", "WARNING"),
-                            message=f"{room.name} is in {room.zone} zone but must be {rule['required_zone']}",
-                            source=rule.get("source", "UNKNOWN")
-                        )
-                    )
-
-    return results
-
-# ---------------- ADJACENCY RULES ----------------
-def evaluate_adjacency_rules(adjacency_map, rules):
-    results = []
+    logs.append(LogEvent(
+        step="AREA",
+        rule_id="AREA_INIT",
+        status="INFO",
+        message="Starting area compliance checks"
+    ))
 
     for rule in rules:
-        if "room_type" not in rule or "forbidden_near" not in rule:
-            continue
+        for room in rooms:
+            attr = rule.get("Room_Attribute")
 
-        room = rule["room_type"]
-        forbidden = rule["forbidden_near"]
+            if attr and room.has_attr(attr):
+                applied = True
+                min_area = float(rule["Min_Area_sqm"])
 
-        if forbidden in adjacency_map.get(room, []):
-            results.append(
-                ComplianceResult(
-                    rule_id=rule.get("rule_id", "ADJ_UNKNOWN"),
-                    status="FAIL",
-                    severity=rule.get("severity", "CRITICAL"),
-                    message=f"{room} placed adjacent to {forbidden}",
-                    source=rule.get("source", "UNKNOWN")
-                )
+                if room.area < min_area:
+                    msg = rule["Explainability_Template"] \
+                        .replace("{Actual}", str(room.area)) \
+                        .replace("{Min}", str(min_area))
+
+                    logs.append(LogEvent("AREA", rule["Rule_ID"], "FAIL", msg))
+                    results.append(
+                        ComplianceResult(
+                            rule_id=rule["Rule_ID"],
+                            severity=rule["Severity"],
+                            message=msg,
+                            source=rule["Source"],
+                            category="AREA"
+                        )
+                    )
+                else:
+                    msg = f"{room.id} area {room.area} sqm ≥ {min_area} sqm"
+                    logs.append(LogEvent("AREA", rule["Rule_ID"], "PASS", msg))
+                    results.append(
+                        ComplianceResult(
+                            rule_id=rule["Rule_ID"],
+                            severity="PASS",
+                            message=msg,
+                            source=rule["Source"],
+                            category="AREA"
+                        )
+                    )
+
+    if not applied:
+        results.append(
+            ComplianceResult(
+                rule_id="AREA_NONE",
+                severity="INFO",
+                message="No area rules applicable to given rooms",
+                source="SYSTEM",
+                category="AREA"
             )
+        )
 
     return results
 
-# ---------------- CONFLICT DETECTION ----------------
-def detect_conflicts(active_constraints, conflict_rules):
+
+# -------------------------------------------------
+# ADJACENCY RULES
+# -------------------------------------------------
+def evaluate_adjacency(rooms, rules, logs):
     results = []
+    room_map = {r.id: r for r in rooms}
+    applied = False
 
-    # Even if conflict_rules is empty, detect conflicts dynamically
-    for key, values in active_constraints.items():
-        unique_values = set(values)
+    logs.append(LogEvent(
+        step="ADJACENCY",
+        rule_id="ADJ_INIT",
+        status="INFO",
+        message="Starting adjacency compliance checks"
+    ))
 
-        if len(unique_values) > 1:
+    for rule in rules:
+        for room in rooms:
+            if room.has_attr(rule["Primary_Room_Attribute"]):
+                applied = True
+                for adj_id in room.adjacent_to:
+                    adj_room = room_map.get(adj_id)
+                    if not adj_room:
+                        continue
+
+                    if adj_room.has_attr(rule["Adjacent_Room_Attribute"]):
+                        if rule["Adjacency_Allowed"] == "No":
+                            logs.append(LogEvent(
+                                "ADJACENCY",
+                                rule["Rule_ID"],
+                                "FAIL",
+                                rule["Reason"]
+                            ))
+                            results.append(
+                                ComplianceResult(
+                                    rule_id=rule["Rule_ID"],
+                                    severity=rule["Severity"],
+                                    message=rule["Reason"],
+                                    source=rule["Source"],
+                                    category="ADJACENCY"
+                                )
+                            )
+                        else:
+                            logs.append(LogEvent(
+                                "ADJACENCY",
+                                rule["Rule_ID"],
+                                "PASS",
+                                "Adjacency allowed"
+                            ))
+
+    if not applied:
+        results.append(
+            ComplianceResult(
+                rule_id="ADJ_NONE",
+                severity="INFO",
+                message="No adjacency rules applicable",
+                source="SYSTEM",
+                category="ADJACENCY"
+            )
+        )
+
+    return results
+
+
+# -------------------------------------------------
+# ZONE RULES
+# -------------------------------------------------
+def evaluate_zone(rooms, rules, logs):
+    results = []
+    room_map = {r.id: r for r in rooms}
+    applied = False
+
+    logs.append(LogEvent(
+        step="ZONE",
+        rule_id="ZONE_INIT",
+        status="INFO",
+        message="Starting zone transition checks"
+    ))
+
+    for rule in rules:
+        for room in rooms:
+            if (
+                room.zone == rule["Primary_Zone"]
+                and room.has_attr(rule["Primary_Room_Attribute"])
+            ):
+                for adj_id in room.adjacent_to:
+                    adj_room = room_map.get(adj_id)
+                    if not adj_room:
+                        continue
+
+                    if (
+                        adj_room.zone == rule["Secondary_Zone"]
+                        and adj_room.has_attr(rule["Secondary_Room_Attribute"])
+                        and rule["Transition_Allowed"] == "No"
+                    ):
+                        applied = True
+                        logs.append(LogEvent(
+                            "ZONE",
+                            rule["Rule_ID"],
+                            "FAIL",
+                            rule["Reason"]
+                        ))
+                        results.append(
+                            ComplianceResult(
+                                rule_id=rule["Rule_ID"],
+                                severity=rule["Severity"],
+                                message=rule["Reason"],
+                                source=rule["Source"],
+                                category="ZONE"
+                            )
+                        )
+
+    if not applied:
+        results.append(
+            ComplianceResult(
+                rule_id="ZONE_NONE",
+                severity="INFO",
+                message="No zone conflicts detected",
+                source="SYSTEM",
+                category="ZONE"
+            )
+        )
+
+    return results
+
+
+# -------------------------------------------------
+# FLOW RULES
+# -------------------------------------------------
+def evaluate_flow(layout, rules, logs):
+    results = []
+    applied = False
+
+    logs.append(LogEvent(
+        step="FLOW",
+        rule_id="FLOW_INIT",
+        status="INFO",
+        message="Starting flow compliance checks"
+    ))
+
+    for flow in layout.get("flows", []):
+        path_zones = [
+            r["zone"] for r in layout["rooms"]
+            if r["id"] in flow["path"]
+        ]
+
+        for rule in rules:
+            if flow["entity"] != rule["Flow_Entity"]:
+                continue
+
+            applied = True
+            if (
+                rule["Flow_Allowed"] == "No"
+                and rule["Origin_Zone"] in path_zones
+                and rule["Destination_Zone"] in path_zones
+            ):
+                logs.append(LogEvent(
+                    "FLOW",
+                    rule["Rule_ID"],
+                    "FAIL",
+                    rule["Reason"]
+                ))
+                results.append(
+                    ComplianceResult(
+                        rule_id=rule["Rule_ID"],
+                        severity=rule["Severity"],
+                        message=rule["Reason"],
+                        source=rule["Source"],
+                        category="FLOW"
+                    )
+                )
+
+    if not applied:
+        results.append(
+            ComplianceResult(
+                rule_id="FLOW_NONE",
+                severity="INFO",
+                message="No flow rules applicable",
+                source="SYSTEM",
+                category="FLOW"
+            )
+        )
+
+    return results
+
+
+# -------------------------------------------------
+# CONFLICT RULES
+# -------------------------------------------------
+def evaluate_conflicts(rooms, rules, logs):
+    results = []
+    active_attributes = set()
+
+    logs.append(LogEvent(
+        step="CONFLICT",
+        rule_id="CONFLICT_INIT",
+        status="INFO",
+        message="Starting regulatory conflict detection"
+    ))
+
+    # Collect all active attributes
+    for room in rooms:
+        active_attributes.update(room.attributes)
+
+    for rule in rules:
+        if (
+            rule["Constraint_A"] in active_attributes
+            and rule["Constraint_B"] in active_attributes
+        ):
+            logs.append(LogEvent(
+                "CONFLICT",
+                rule["Conflict_ID"],
+                "CONFLICT",
+                rule["Conflict_Description"]
+            ))
             results.append(
                 ComplianceResult(
-                    rule_id="CONFLICT_DETECTED",
-                    status="CONFLICT",
-                    severity="CRITICAL",
-                    message=f"Conflict detected for {key}: {', '.join(unique_values)}",
-                    source="MULTIPLE_REGULATORS"
+                    rule_id=rule["Conflict_ID"],
+                    severity=rule["Severity"],
+                    message=rule["Conflict_Description"],
+                    source=rule["Source"],
+                    category="CONFLICT"
                 )
             )
+
+    if not results:
+        results.append(
+            ComplianceResult(
+                rule_id="CONFLICT_NONE",
+                severity="INFO",
+                message="No regulatory conflicts detected",
+                source="SYSTEM",
+                category="CONFLICT"
+            )
+        )
 
     return results
