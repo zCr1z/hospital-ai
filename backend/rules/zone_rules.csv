@@ -15,3 +15,4 @@ ZONE_013,NBC,Life_Safety,Fire_Exit_Zone,Clean_Zone,Conflict,No,Critical,Fire exi
 ZONE_014,Functional,Operational_Flow,Patient_Zone,Waiting_Zone,Yes,No,Hard_Fail,Waiting areas must precede patient diagnostic zones,Reject_Layout,Patient zone bypasses waiting zone.
 ZONE_015,Functional,Operational_Flow,Reporting_Zone,Imaging_Zone,Yes,No,Warning,Close zoning improves reporting efficiency,Suggest_Optimization,Reporting zone not optimally placed near imaging zone.
 ZONE_016,Functional,Operational_Flow,Equipment_Zone,Imaging_Zone,Yes,No,Warning,Equipment support zones should be near imaging rooms,Suggest_Optimization,Equipment zone too far from imaging zone.
+
